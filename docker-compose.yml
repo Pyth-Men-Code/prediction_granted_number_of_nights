@@ -1,0 +1,60 @@
+version: "3.9"
+
+services:
+  notebook:
+    image: jupyter/base-notebook
+    container_name: notebook_service
+    profiles: ["notebook"]
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./notebooks:/home/work
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+
+  #api:
+  #  build:
+  #    context: ./api
+  #    dockerfile: Dockerfile
+  #  container_name: api_service
+  #  profiles: ["api"]
+  #  ports:
+  #    - "8000:8000"
+  #  volumes:
+  #    - ./api:/routes
+  #  environment:
+  #    - PYTHONUNBUFFERED=1
+  #  depends_on:
+  #    - database
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend_service
+    profiles: ["frontend"]
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - api
+
+  #database:
+  #  image: postgres:15
+  #  container_name: db_service
+  #  ports:
+  #    - "5432:5432"
+  #  environment:
+  #    POSTGRES_USER: user
+  #  POSTGRES_PASSWORD: password
+  #  POSTGRES_DB: mydatabase
+  #  volumes:
+  #    - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+    name: granted_number_of_night_prediction_postgres_data
